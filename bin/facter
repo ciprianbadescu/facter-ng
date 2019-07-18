@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+require 'open3'
+require_relative '../lib/base'
+require_relative '../lib/fact'
+require_relative '../lib/fact_collection'
+require_relative '../lib/base_resolver'
+require_relative '../lib/os_resolver'
+
+module Facter
+  class CLI < Facter::CLIBase
+
+    class_option :color, type: :boolean, :aliases => 'c'
+    package_name "Facter"
+    desc 'os', "Runs os on local os"
+    long_desc <<-LONGDESC
+          Runs the `PA_COMPONENT`'s (puppet-agent component) acceptance tests on the given
+          Packer image, where the Packer image is specified by its `OS_DIST_VARIANT_ARCH_DIR`
+          and `TEMPLATE_FILE`.
+        LONGDESC
+    method_option :debug,
+                  type: :string,
+                  required: false,
+                  desc: 'The puppet-agent version to checkout and test the component with'
+    # TODO: Move server_version to utils.rb as a common CLI option?
+    method_option :verbose,
+                  type: :string,
+                  required: false,
+                  desc: 'The puppetserver version that will be used for the tests'
+    def os(*args)
+      # puts "args: " + args.inspect
+      # binding.pry
+      search = args - ARGV
+      a = OsResolver.resolve(search.flatten)
+
+      # Kernel.system('uname -a')
+      puts a
+    end
+
+    desc 'default', "Runs uname on local os"
+    long_desc <<-LONGDESC
+          Runs the `PA_COMPONENT`'s (puppet-agent component) acceptance tests on the given
+          Packer image, where the Packer image is specified by its `OS_DIST_VARIANT_ARCH_DIR`
+          and `TEMPLATE_FILE`.
+        LONGDESC
+    method_option :debug,
+                  type: :string,
+                  required: false,
+                  desc: 'The puppet-agent version to checkout and test the component with'
+
+    def default(*args)
+binding.pry
+      puts "default: #{args.inspect}"
+
+    end
+    default_task :default
+  end
+end
+
+def dispatch(argv)
+  arg = argv[0]
+  opt = argv[1]
+  opt ||= arg
+
+  if arg && arg.include?('.')
+    fact_query = arg.split('.')
+    task = fact_query[0]
+    params = fact_query.drop(1)
+  else
+    task = arg
+  end
+
+  task = 'default' if !Facter::CLI.all_tasks.has_key?(task) || task == ''
+
+  [task, params, opt].compact
+end
+
+
+# args = parse_args(ARGV[0])
+# ARGV.unshift(Facter::CLI.default_task) unless Facter::CLI.all_tasks.has_key?(parse_args(ARGV[0]))
+
+# puts "ARGV: " + ARGV.inspect
+
+# binding.pry
+# puts "ARGV: " + ARGV.inspect
+Facter::CLI.start(dispatch(ARGV))
+# Facter::CLI.start(ARGV)
+
