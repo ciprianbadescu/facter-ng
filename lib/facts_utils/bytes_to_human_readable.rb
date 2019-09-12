@@ -20,8 +20,7 @@ module Facter
         exp = (Math.log2(bytes) / 10.0).floor
         converted_number = (100.0 * (bytes / 1024.0**exp)).round / 100.0
         if converted_number > 1024.0
-          puts 'salsa'
-          exp += exp
+          exp += 1
           converted_number = 1.00
         end
         { exp: exp, converted_number: converted_number }
