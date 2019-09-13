@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+# PdDv (Predefined Devices) the list of all devices supported by this release of AIX
+# PdAt (Predefined Attributes) default values for all device attributes
+# CuDv (Customized Devices) the devices present on this machine
+# CuAt (Customized Attributes) non-default attribute values
+
 module Facter
   class ODMQuery
-    attr_reader :query
     REPOS = %w[CuDv CuAt PdAt PdDv].freeze
 
     def initialize
@@ -31,7 +35,7 @@ module Facter
     end
 
     def query
-      "odmget -q " + @conditions.join(' AND ')
+      'odmget -q ' + @conditions.join(' AND ')
     end
   end
 end

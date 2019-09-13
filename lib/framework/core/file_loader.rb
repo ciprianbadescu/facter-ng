@@ -21,6 +21,7 @@ def load_lib_dirs(*dirs)
   load_dir(['lib', dirs])
 end
 
+require "#{ROOT_DIR}/lib/framework/utils/odm_query"
 load_lib_dirs('resolvers')
 load_lib_dirs('utils')
 load_lib_dirs('framework', 'core')
@@ -29,7 +30,7 @@ load_lib_dirs('models')
 os = ENV['RACK_ENV'] == 'test' ? '' : CurrentOs.instance.identifier
 
 load_lib_dirs('facts', os.to_s, '**')
-load_lib_dirs('resolvers', os.to_s, '**') if os.to_s =~ /win/
+load_lib_dirs('resolvers', os.to_s, '**') if os.to_s =~ /win|aix/
 
 require "#{ROOT_DIR}/lib/framework/helpers/utils"
 require "#{ROOT_DIR}/lib/framework/formatters/formatter_factory"
@@ -39,4 +40,3 @@ require "#{ROOT_DIR}/lib/framework/formatters/yaml_fact_formatter"
 
 require "#{ROOT_DIR}/lib/framework/core/fact_augmenter"
 require "#{ROOT_DIR}/lib/framework/parsers/query_parser"
-require "#{ROOT_DIR}/lib/framework/utils/odm_query"
